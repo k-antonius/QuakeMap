@@ -6,6 +6,15 @@ var pastWeekSignificantQuakesURL = "https://earthquake.usgs.gov/earthquakes/feed
  function ControlViewModel() {
    var self = this;
    self.earthquakes = ko.observableArray();
+
+   // the quake to be displayed in viewing area
+   self.currentQuake = ko.observable(false);
+
+   self.setCurrentQuake = function(earthQuakeJSON) {
+     console.log(earthQuakeJSON);
+     self.currentQuake(earthQuakeJSON);
+   }
+
    // get earthquakes from feed
    $.getJSON(pastWeekSignificantQuakesURL, function(data) {
      for (var i = 0; i < data.features.length; i++) {

@@ -12,7 +12,7 @@
           <table>
             <tbody data-bind="foreach: earthquakes">
               <tr>
-                <td data-bind="text: properties.place">
+                <td data-bind="click: $root.setCurrentQuake, text: properties.place">
                 </td>
               </tr>
             </tbody>
@@ -21,12 +21,15 @@
       </td>
       <td>
         <div id="map_container">
+          <!-- ko if: currentQuake -->
+          <span data-bind="text: currentQuake().geometry.coordinates"></span>
+          <!-- /ko -->
         </div>
       </td>
     </tr>
   </table>
   <script src="js/libs/jquery.min.js"></script>
   <script src="js/libs/knockout-3.4.2.js"></script>
-  <script src="js/viewmodel.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
