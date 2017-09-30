@@ -10,6 +10,20 @@
       <td>
         <div id="control_container">
           <table>
+            <thead>
+              <tr>
+                <td>
+                  <select data-bind="options: feedTypes,
+                  value: curFeedType,
+                  optionsCaption: 'Choose earthquake magnitude limit...'"></select>
+                </td>
+                <td>
+                  <select data-bind="options: feedTimeHorizons,
+                  value: curFeedTimeHorizon,
+                  optionsCaption: 'Choose earthquake time window...'"
+                </td>
+              </tr>
+            </thead>
             <tbody data-bind="foreach: earthquakes">
               <tr>
                 <td data-bind="click: $root.setCurrentQuake, text: properties.place">
