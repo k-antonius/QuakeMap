@@ -1,5 +1,12 @@
-// object to store quake feeds from USGS
 
+
+var map
+function initMap() {
+  map = new google.maps.Map(document.getElementById('map_container'), {
+    center: {lat: 0, lng: 0},
+    zoom: 1
+  });
+}
 
 // viewmodel for the map controls
 function ControlViewModel() {
@@ -26,6 +33,16 @@ function ControlViewModel() {
    self.currentQuake(earthQuakeJSON);
   }
 
+  // marker appears on map when earthquake title is clicked
+  self.currentQuake.subscribe(()=> {
+    var latLng = self.currentQuake().geometry.coordinates;
+    console.log(latLng);
+    new google.maps.Marker({
+      position: {lat: latLng[1], lng: latLng[0]},
+      map: map
+    });
+  });
+
   // get earthquakes from feed
   self.getQuakeFeed = function() {
     $.getJSON(self.generateFeedUrl(), function(data) {
@@ -35,6 +52,8 @@ function ControlViewModel() {
       };
     });
   }
+
+  // update the feed when either select menu changes
   self.curFeedType.subscribe(self.getQuakeFeed, null);
   self.curFeedTimeHorizon.subscribe(self.getQuakeFeed, null);
   // call for inital setup
