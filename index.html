@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Earthquake Viewer</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <table>
@@ -26,7 +27,8 @@
             </thead>
             <tbody data-bind="foreach: earthquakes">
               <tr>
-                <td data-bind="click: $root.setCurrentQuake, text: properties.place">
+                <td data-bind="click: $root.setCurrentQuake,
+                text: properties.place">
                 </td>
               </tr>
             </tbody>
@@ -34,16 +36,15 @@
         </div>
       </td>
       <td>
-        <div id="map_container">
-          <!-- ko if: currentQuake -->
-          <span data-bind="text: currentQuake().geometry.coordinates"></span>
-          <!-- /ko -->
-        </div>
+        <div id="map_container"></div>
       </td>
     </tr>
   </table>
   <script src="js/libs/jquery.min.js"></script>
   <script src="js/libs/knockout-3.4.2.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1rdDMZkmaoj_OINNgctPths_KJn1lTPg&callback=initMap"
+  async defer>
+  </script>
   <script src="js/app.js"></script>
 </body>
 </html>
