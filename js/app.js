@@ -1,5 +1,16 @@
 var map;
 
+class earthQuakeModel {
+  constructor(geoJSON) {
+    this.name = geoJSON.properties.place;
+    this.magnitude = geoJSON.properties.mag;
+    let coordinates = geoJSON.geometry.coordinates;
+    this.latLon = {lat: coordinates[1], lng: coordinates[0]};
+    this.depth = coordinates[2];
+    this.time = geoJSON.properties.time;
+  }
+}
+
 // viewmodel for the map controls
 function ControlViewModel() {
   var self = this;
@@ -9,15 +20,14 @@ function ControlViewModel() {
   // types of available earthquake feeds from USGS.gov
   self.feedTypes = ["significant", "4.5", "2.5", "1.0", "all"];
   self.feedTimeHorizons = ["hour", "day", "week", "month"];
-  
+
   // use significant and week as default feed when app loads
   self.curFeedType = ko.observable("significant");
   self.curFeedTimeHorizon = ko.observable("week");
 
   // predicate helper function
   function isQuakeOnMap(earthQuake) {
-    let latLng = earthQuake.geometry.coordinates;
-    return boundsLatLng.contains({lat: latLng[1], lng: latLng[0]});
+    return boundsLatLng.contains(earthQuake.latLon);
   }
 
   // method that removes quakes from observable array as map bounds
@@ -35,15 +45,16 @@ function ControlViewModel() {
   // the quake to be displayed in viewing area
   self.currentQuake = ko.observable(false);
 
-  self.setCurrentQuake = function(earthQuakeJSON) {
-   self.currentQuake(earthQuakeJSON);
+  self.setCurrentQuake = function(earthQuake) {
+    // console.log(earthQuake)
+    self.currentQuake(earthQuake);
   }
 
   // marker appears on map when earthquake title is clicked
   self.currentQuake.subscribe(()=> {
-    var latLng = self.currentQuake().geometry.coordinates;
+    console.log(self.currentQuake.latLon);
     new google.maps.Marker({
-      position: {lat: latLng[1], lng: latLng[0]},
+      position: self.currentQuake().latLon,
       map: map
     });
   });
@@ -53,7 +64,7 @@ function ControlViewModel() {
     $.getJSON(self.generateFeedUrl(), function(data) {
       self.loadedQuakes = [];
       for (var i = 0; i < data.features.length; i++) {
-       self.loadedQuakes.push(data.features[i]);
+       self.loadedQuakes.push(new earthQuakeModel(data.features[i]));
       };
     });
   }
