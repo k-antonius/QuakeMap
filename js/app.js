@@ -39,13 +39,17 @@ class MarkerManager {
   }
 
   removeQuakeMarker() {
-    this.quakeMarker.setMap(null);
-    this.placeMaker = null;
+    if (this.quakeMarker) {
+      this.quakeMarker.setMap(null);
+      this.placeMaker = null;
+    }
   }
 
   removePlaceMarker() {
-    this.placeMarker.setMap(null);
-    this.placeMaker = null;
+    if (this.placeMarker) {
+      this.placeMarker.setMap(null);
+      this.placeMaker = null;
+    }
   }
 }
 
@@ -64,10 +68,7 @@ function ControlViewModel() {
   self.curFeedTimeHorizon = ko.observable("week");
 
   self.markerManager = new MarkerManager();
-
-
-
-
+  
   // method that removes quakes from observable array as map bounds
   // change
   self.updateVisibleQuakes = function updateVisibleQuakes(mapBounds) {
