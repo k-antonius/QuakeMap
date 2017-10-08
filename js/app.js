@@ -1,3 +1,4 @@
+'use strict';
 var map;
 
 class earthQuakeModel {
@@ -8,6 +9,43 @@ class earthQuakeModel {
     this.latLon = {lat: coordinates[1], lng: coordinates[0]};
     this.depth = coordinates[2];
     this.time = geoJSON.properties.time;
+  }
+}
+
+class MarkerManager {
+  constructor() {
+    this.quakeMarker = null;
+    this.placeMarker = null;
+  }
+
+  createMarker(earthQuake) {
+    return new google.maps.Marker({
+      position: earthQuake.latLon,
+      map: map});
+  }
+
+  addQuakeMarker(earthQuake) {
+    if (this.quakeMarker) {
+      this.removeQuakeMarker();
+    }
+    this.quakeMarker = this.createMarker(earthQuake);
+  }
+
+  addPlaceMarker(placeInfo) {
+    if (this.placeMarker) {
+      this.removePlaceMarker();
+    }
+    this.placeMarker = createMarker(placeInfo);
+  }
+
+  removeQuakeMarker() {
+    this.quakeMarker.setMap(null);
+    this.placeMaker = null;
+  }
+
+  removePlaceMarker() {
+    this.placeMarker.setMap(null);
+    this.placeMaker = null;
   }
 }
 
@@ -25,14 +63,20 @@ function ControlViewModel() {
   self.curFeedType = ko.observable("significant");
   self.curFeedTimeHorizon = ko.observable("week");
 
-  // predicate helper function
-  function isQuakeOnMap(earthQuake) {
-    return boundsLatLng.contains(earthQuake.latLon);
-  }
+  self.markerManager = new MarkerManager();
+
+
+
 
   // method that removes quakes from observable array as map bounds
   // change
-  self.updateVisibleQuakes = function updateVisibleQuakes() {
+  self.updateVisibleQuakes = function updateVisibleQuakes(mapBounds) {
+
+    // predicate helper function
+    function isQuakeOnMap(earthQuake) {
+      return mapBounds.contains(earthQuake.latLon);
+    }
+
     self.visibleQuakes(self.loadedQuakes.filter(isQuakeOnMap));
   }
 
@@ -52,11 +96,7 @@ function ControlViewModel() {
 
   // marker appears on map when earthquake title is clicked
   self.currentQuake.subscribe(()=> {
-    console.log(self.currentQuake.latLon);
-    new google.maps.Marker({
-      position: self.currentQuake().latLon,
-      map: map
-    });
+    self.markerManager.addQuakeMarker(self.currentQuake());
   });
 
   // get earthquakes from feed
@@ -90,8 +130,8 @@ function initMap() {
 
   // listener to let UI know that map bounds have changed
   map.addListener('idle', function() {
-    boundsLatLng = map.getBounds();
-    controlViewModel.updateVisibleQuakes();
+    let boundsLatLng = map.getBounds();
+    controlViewModel.updateVisibleQuakes(boundsLatLng);
   });
 }
 
