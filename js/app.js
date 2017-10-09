@@ -56,42 +56,20 @@ class MarkerManager {
 // viewmodel for the map controls
 function ControlViewModel() {
   var self = this;
+  self.map = null;
   self.loadedQuakes = [];
   self.visibleQuakes = ko.observableArray();
-
   // types of available earthquake feeds from USGS.gov
   self.feedTypes = ["significant", "4.5", "2.5", "1.0", "all"];
   self.feedTimeHorizons = ["hour", "day", "week", "month"];
-
   // use significant and week as default feed when app loads
   self.curFeedType = ko.observable("significant");
   self.curFeedTimeHorizon = ko.observable("week");
-
-  self.markerManager = new MarkerManager();
-  
-  // method that removes quakes from observable array as map bounds
-  // change
-  self.updateVisibleQuakes = function updateVisibleQuakes(mapBounds) {
-
-    // predicate helper function
-    function isQuakeOnMap(earthQuake) {
-      return mapBounds.contains(earthQuake.latLon);
-    }
-
-    self.visibleQuakes(self.loadedQuakes.filter(isQuakeOnMap));
-  }
-
-  // Generate a url for the desired earthquake feed
-  self.generateFeedUrl = function() {
-   let baseFeedUrl = `https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/${self.curFeedType()}_${self.curFeedTimeHorizon()}.geojson`;
-   return baseFeedUrl;
-  }
-
-  // the quake to be displayed in viewing area
   self.currentQuake = ko.observable(false);
+  self.markerManager = new MarkerManager();
 
+  // called from data binding to update current quake
   self.setCurrentQuake = function(earthQuake) {
-    // console.log(earthQuake)
     self.currentQuake(earthQuake);
   }
 
@@ -100,21 +78,78 @@ function ControlViewModel() {
     self.markerManager.addQuakeMarker(self.currentQuake());
   });
 
-  // get earthquakes from feed
-  self.getQuakeFeed = function() {
-    $.getJSON(self.generateFeedUrl(), function(data) {
-      self.loadedQuakes = [];
-      for (var i = 0; i < data.features.length; i++) {
-       self.loadedQuakes.push(new earthQuakeModel(data.features[i]));
-      };
-    });
+  self.updateVisibleQuakes = function(bounds, loadedQuakes) {
+
+    function setVisibleQuakes (quakesToFilter) {
+      // self.visibleQuakes(quakesToFilter.filter(quake => {
+      //   return bounds.contains(quake.latLon);
+      // }));
+      console.log('in SetVisibleQuakes');
+      console.log(quakesToFilter);
+      self.visibleQuakes.removeAll();
+      for (let i=0; i < quakesToFilter.length; i++) {
+        console.log('in loop');
+        let curQuake = quakesToFilter[i];
+        if (bounds.contains(curQuake)) {
+          self.visibleQuakes.push(quakesToFilter[i]);
+        }
+        else {
+          console.log("not in bounds");
+        }
+      }
+    }
+
+    if (loadedQuakes) {
+      console.log('taking branch from arg');
+      console.log(loadedQuakes);
+      setVisibleQuakes(loadedQuakes);
+    }
+    else {
+      setVisibleQuakes(self.loadedQuakes);
+    }
   }
 
+  // Generate a url for the desired earthquake feed
+  self.generateFeedUrl = function() {
+   let baseFeedUrl = `https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/${self.curFeedType()}_${self.curFeedTimeHorizon()}.geojson`;
+   return baseFeedUrl;
+  }
+
+
+
+  async function getQuakeFeed() {
+    let loadedQuakes = [];
+    $.getJSON(self.generateFeedUrl(), function(data) {
+      for (var i = 0; i < data.features.length; i++) {
+       loadedQuakes.push(new earthQuakeModel(data.features[i]));
+      };
+    });
+    return loadedQuakes;
+  }
+
+  /**
+  * @description After a UI update changes the USGS feed,
+  * this function loads the new geoJSON and updates the earthquakes
+  * listed in the UI.
+  */
+  self.updateQuakeFeed = async function() {
+    if (self.map) {
+      let loadedQuakes = getQuakeFeed();
+      loadedQuakes.then(result => {
+        self.updateVisibleQuakes(self.map.getBounds(), result);
+        self.loadedQuakes = result;
+      });
+    }
+  }
+
+  // get earthquakes from feed
+
+
   // update the feed when either select menu changes
-  self.curFeedType.subscribe(self.getQuakeFeed, null);
-  self.curFeedTimeHorizon.subscribe(self.getQuakeFeed, null);
+  self.curFeedType.subscribe(self.updateQuakeFeed, null);
+  self.curFeedTimeHorizon.subscribe(self.updateQuakeFeed, null);
   // call for inital setup
-  self.getQuakeFeed();
+  self.updateQuakeFeed();
 
 }
 
@@ -128,11 +163,11 @@ function initMap() {
     center: {lat: 0, lng: 0},
     zoom: 3
   });
-
+  controlViewModel.map = map;
   // listener to let UI know that map bounds have changed
   map.addListener('idle', function() {
-    let boundsLatLng = map.getBounds();
-    controlViewModel.updateVisibleQuakes(boundsLatLng);
+    let bounds = map.getBounds();
+    controlViewModel.updateVisibleQuakes(bounds, null);
   });
 }
 
