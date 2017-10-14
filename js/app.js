@@ -33,7 +33,7 @@ class QuakeMarker extends AbstractMarker {
       `<div>Where: ${this.entity.name}</div>` +
       `<div>Magnitude: ${this.entity.magnitude}</div>` +
       `<div>Depth: ${this.entity.depth}</div>` +
-      `<div>When: ${this.entity.time}</div>` +
+      `<div>When: ${this.formatDate()}</div>` +
       '</div>';
     this.infoWindow = new google.maps.InfoWindow({
       content: contentString
@@ -41,6 +41,15 @@ class QuakeMarker extends AbstractMarker {
     this.marker.addListener('click', () => {
       this.infoWindow.open(this.map, this.marker);
     });
+  }
+
+  formatDate() {
+    const time = this.entity.time;
+    const options = {weekday: 'short', year: 'numeric', month: 'short',
+      day: '2-digit'};
+    let formatted = new Date(time);
+    return formatted.toLocaleDateString('en-US', options);
+
   }
 }
 
