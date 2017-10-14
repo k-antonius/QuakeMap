@@ -11,6 +11,39 @@ class earthQuakeModel {
   }
 }
 
+class AbstractMarker {
+  constructor(entityToMark, map) {
+    this.entity = entityToMark;
+    this.marker = new google.maps.Marker({
+      position: entityToMark.latLon,
+      map: map});
+    this.map = map;
+  }
+
+  removeMarker() {
+    this.marker.setMap(null);
+    this.marker = null;
+  }
+}
+
+class QuakeMarker extends AbstractMarker {
+  constructor(earthQuake, map) {
+    super(earthQuake, map);
+    let contentString = '<div id="quakeInfoWindow">' +
+      `<div>Where: ${this.entity.name}</div>` +
+      `<div>Magnitude: ${this.entity.magnitude}</div>` +
+      `<div>Depth: ${this.entity.depth}</div>` +
+      `<div>When: ${this.entity.time}</div>` +
+      '</div>';
+    this.infoWindow = new google.maps.InfoWindow({
+      content: contentString
+    });
+    this.marker.addListener('click', () => {
+      this.infoWindow.open(this.map, this.marker);
+    });
+  }
+}
+
 class MarkerManager {
   constructor(googleMapInstance) {
     this.quakeMarker = null;
@@ -18,39 +51,28 @@ class MarkerManager {
     this.map = googleMapInstance;
   }
 
-  createMarker(earthQuake) {
-    return new google.maps.Marker({
-      position: earthQuake.latLon,
-      map: this.map});
+  setQuakeMarker(earthQuake) {
+    this.removeQuakeMarker();
+    this.quakeMarker = new QuakeMarker(earthQuake, this.map);
   }
 
-  addQuakeMarker(earthQuake) {
-    if (this.quakeMarker) {
-      this.removeQuakeMarker();
-    }
-    this.quakeMarker = this.createMarker(earthQuake);
-  }
-
-  addPlaceMarker(placeInfo) {
-    if (this.placeMarker) {
-      this.removePlaceMarker();
-    }
-    this.placeMarker = createMarker(placeInfo);
-  }
+  // setPlaceMarker(placeInfo) {
+  //   this.placeMarker = createMarker(placeInfo, this.map);
+  // }
 
   removeQuakeMarker() {
     if (this.quakeMarker) {
-      this.quakeMarker.setMap(null);
+      this.quakeMarker.removeMarker();
       this.placeMaker = null;
     }
   }
 
-  removePlaceMarker() {
-    if (this.placeMarker) {
-      this.placeMarker.setMap(null);
-      this.placeMaker = null;
-    }
-  }
+  // removePlaceMarker() {
+  //   if (this.placeMarker) {
+  //     this.placeMarker.setMap(null);
+  //     this.placeMaker = null;
+  //   }
+  // }
 }
 
 // viewmodel for the map controls
@@ -70,12 +92,11 @@ function ControlViewModel() {
   self.markerManager = null;
 
   self.setCurrentQuake = function(earthQuake) {
-    console.log(earthQuake);
     self.currentQuake(earthQuake);
   }
 
   self.currentQuake.subscribe(()=> {
-    self.markerManager.addQuakeMarker(self.currentQuake());
+    self.markerManager.setQuakeMarker(self.currentQuake());
   });
 
   function setVisibleQuakes (bounds, quakesToFilter) {
