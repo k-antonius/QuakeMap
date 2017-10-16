@@ -23,6 +23,11 @@
                   value: curFeedTimeHorizon,
                   optionsCaption: 'Choose earthquake time window...'"
                 </td>
+                <td>
+                  <div id="detail_button">
+                    <button data-bind="click: $root.showQuakeDetail">Show Detail</button>
+                  </div>
+                </td>
               </tr>
             </thead>
             <tbody data-bind="foreach: visibleQuakes">
