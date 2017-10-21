@@ -23,7 +23,8 @@ class AbstractMarker {
     this.entity = entityToMark;
     this.marker = new google.maps.Marker({
       position: entityToMark.latLon,
-      map: map});
+      map: map,
+      animation: google.maps.Animation.DROP});
     this.map = map;
     this.infoWindow = new google.maps.InfoWindow();
     this.marker.addListener('click', () => {
