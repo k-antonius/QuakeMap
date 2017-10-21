@@ -273,8 +273,6 @@ function ControlViewModel() {
   // update the feed when either select menu changes
   self.curFeedType.subscribe(self.updateQuakeFeed, null);
   self.curFeedTimeHorizon.subscribe(self.updateQuakeFeed, null);
-  // call for inital setup
-  self.updateQuakeFeed();
 }
 
 var controlViewModel = new ControlViewModel();
@@ -282,12 +280,13 @@ var controlViewModel = new ControlViewModel();
 // create a new Google Map
 function initMap() {
   let map = new google.maps.Map(document.getElementById('map_container'), {
-    center: {lat: 0, lng: 0},
-    zoom: 3
+    center: {lat: 36, lng: -96},
+    zoom: 4
   });
 
   controlViewModel.map = map;
   controlViewModel.markerManager = new MarkerManager(map);
+  controlViewModel.updateQuakeFeed();
   // listener to let UI know that map bounds have changed
   map.addListener('idle', function() {
     let bounds = map.getBounds();
