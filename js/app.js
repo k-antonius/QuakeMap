@@ -160,6 +160,17 @@ class MarkerManager {
     }
   }
 
+  fitToPlaceMarker() {
+    // is place marker in bounds?
+    // if not expand bounds and fit map
+    const placeMarkerPos = this.placeMarker.marker.position;
+    const currentMapBounds = this.map.getBounds();
+    if (!currentMapBounds.contains(placeMarkerPos)) {
+      const expandedBounds = currentMapBounds.extend(placeMarkerPos);
+      this.map.fitBounds(expandedBounds);
+    }
+  }
+
   // geocoding
   geocodeTitlePlace(quake) {
     let titlePlace = this.parseTitle(quake.name);
@@ -171,6 +182,7 @@ class MarkerManager {
         console.log(result);
         console.log(status);
         this.setPlaceMarker(quakeTitlePlace);
+        this.fitToPlaceMarker();
       });
   }
 
