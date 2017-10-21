@@ -137,6 +137,7 @@ class MarkerManager {
   }
 
   setQuakeMarker(earthQuake) {
+    this.removePlaceMarker();
     this.removeQuakeMarker();
     this.quakeMarker = new QuakeMarker(earthQuake, this.map);
   }
@@ -149,14 +150,14 @@ class MarkerManager {
   removeQuakeMarker() {
     if (this.quakeMarker) {
       this.quakeMarker.removeMarker();
-      this.placeMaker = null;
+      this.placeMarker = null;
     }
   }
 
   removePlaceMarker() {
     if (this.placeMarker) {
       this.placeMarker.removeMarker();
-      this.placeMaker = null;
+      this.placeMarker = null;
     }
   }
 
