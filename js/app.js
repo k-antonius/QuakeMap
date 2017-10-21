@@ -11,11 +11,10 @@ class EarthQuakeModel {
   }
 }
 
-// only pass one result to the constructor!
 class QuakeTitlePlaceModel {
-  constructor(geocoderResult) {
-    this.latLon = geocoderResult.geometry.location;
-    this.name = geocoderResult.formatted_address;
+  constructor(name, location) {
+    this.latLon = location;
+    this.name = name;
   }
 }
 
@@ -26,6 +25,10 @@ class AbstractMarker {
       position: entityToMark.latLon,
       map: map});
     this.map = map;
+    this.infoWindow = new google.maps.InfoWindow();
+    this.marker.addListener('click', () => {
+      this.infoWindow.open(this.map, this.marker);
+    });
   }
 
   removeMarker() {
@@ -37,7 +40,6 @@ class AbstractMarker {
     this.map.setCenter(this.marker.position);
     this.map.setZoom(11);
   }
-
 }
 
 class QuakeMarker extends AbstractMarker {
@@ -49,12 +51,7 @@ class QuakeMarker extends AbstractMarker {
       `<div>Depth: ${this.entity.depth}</div>` +
       `<div>When: ${this.formatDate()}</div>` +
       '</div>';
-    this.infoWindow = new google.maps.InfoWindow({
-      content: contentString
-    });
-    this.marker.addListener('click', () => {
-      this.infoWindow.open(this.map, this.marker);
-    });
+    this.infoWindow.setContent(contentString);
   }
 
   formatDate() {
@@ -70,12 +67,65 @@ class QuakeMarker extends AbstractMarker {
 class PlaceMarker extends AbstractMarker {
   constructor(placeTitleObj, map){
     super(placeTitleObj, map);
-    // TODO wikipedia stuff...
+    this.populateInfoWindow(this.entity.name);
   }
 
-  panAndZoom() {
-    this.map.setCenter(this.entity.latLong);
-    this.map.setZoom(11);
+  // gets wikipedia artiles given place title
+  // results are a 2d array [name, description, article link] where the first
+  // array entry in the outer array is the search name
+  async getWikipediaArticles(title) {
+    return $.ajax( {
+      url: 'https://en.wikipedia.org/w/api.php',
+      data: {
+        action: 'opensearch',
+        search: title,
+        limit: '5',
+        format: 'json',
+        origin: '*'
+      },
+      dataType: 'json'
+    });
+  }
+
+  // template individual list item for info window
+  buildInfoNode(title, description, link) {
+    let item = '<li>' +
+    `<a href="${link}"><strong>${title}:</strong></a><br>${description}` +
+    '</li>';
+    return item;
+  }
+
+  // create full template given array of <li> elements
+  assembleTemplate(templatedListItems) {
+    let openTags = '<div id="quakePlaceArticles"> <ol>';
+    let closeTags = '</ol> </div>';
+    return openTags.concat(templatedListItems).concat(closeTags);
+  }
+
+  // get wikipedia articles and populate template with results
+  async parseResults(title) {
+    let results = await this.getWikipediaArticles(title);
+    console.log(results);
+    let li_array = [];
+    for (let i=0; i < results[1].length; i++) {
+      let templatedListItem = this.buildInfoNode(results[1][i],
+                                                 results[2][i],
+                                                 results[3][i]
+                                                );
+      li_array.push(templatedListItem);
+    }
+    return this.assembleTemplate(li_array);
+  }
+
+  // makes an ajax call to retrieve wikipedia articles based on this place's
+  // name. Populates a html template with those articles. Sets the content of
+  // this infowindow.
+  async populateInfoWindow(placeName) {
+    console.log('this place\'s name is ' + placeName);
+    let populatedTemplate = await this.parseResults(placeName);
+    let title = `<div id="quakePlaceTitle">${placeName}:</div>`;
+    console.log(title.concat(populatedTemplate));
+    this.infoWindow.setContent(title.concat(populatedTemplate));
   }
 }
 
@@ -109,23 +159,18 @@ class MarkerManager {
       this.placeMaker = null;
     }
   }
-}
-
-class PlaceInfoManager {
-  constructor(map, observable) {
-    this.map = map;
-    this.place = observable;
-  }
 
   // geocoding
   geocodeTitlePlace(quake) {
     let titlePlace = this.parseTitle(quake.name);
     let geocoder = new google.maps.Geocoder();
-    let geoParams = {address: titlePlace};
+    let geoParams = {address: titlePlace, bounds: this.map.getBounds()};
       geocoder.geocode(geoParams, (result, status) => {
-        this.place(new QuakeTitlePlaceModel(result[0]));
+        let location = result[0].geometry.location;
+        let quakeTitlePlace = new QuakeTitlePlaceModel(titlePlace, location);
         console.log(result);
-        console.log(status)
+        console.log(status);
+        this.setPlaceMarker(quakeTitlePlace);
       });
   }
 
@@ -141,8 +186,6 @@ class PlaceInfoManager {
       return title;
     }
   }
-
-  // store previous center and zoom
 }
 
 // viewmodel for the map controls
@@ -161,7 +204,7 @@ function ControlViewModel() {
   self.currentQuake = ko.observable(false);
   self.markerManager = null;
 
-  self.quakeTitlePlace = ko.observable(false);
+  // self.quakeTitlePlace = ko.observable(false);
 
   self.setCurrentQuake = function(earthQuake) {
     self.currentQuake(earthQuake);
@@ -171,14 +214,9 @@ function ControlViewModel() {
     self.markerManager.setQuakeMarker(self.currentQuake());
   });
 
-  self.quakeTitlePlace.subscribe(() => {
-    self.markerManager.setPlaceMarker(self.quakeTitlePlace());
+  self.showQuakeDetail = async function () {
     self.markerManager.quakeMarker.panAndZoom();
-  });
-
-  self.showQuakeDetail = function () {
-    let infoManager = new PlaceInfoManager(self.map, self.quakeTitlePlace);
-    infoManager.geocodeTitlePlace(self.currentQuake());
+    self.markerManager.geocodeTitlePlace(self.currentQuake());
   }
 
   function setVisibleQuakes (bounds, quakesToFilter) {
