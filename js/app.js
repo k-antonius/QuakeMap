@@ -1,5 +1,13 @@
 'use strict';
 
+const MAPS_URL = 'https://maps.googleapis.com/' +
+                 'maps/api/js?key=AIzaSyB1rdDMZkmaoj_OINNgctPths_KJn1lTPg';
+
+$.getScript(MAPS_URL, initMap)
+  .fail((e)=> {
+  console.log(e + ' failed to load maps API');
+  });
+
 class EarthQuakeModel {
   constructor(geoJSON) {
     this.name = geoJSON.properties.place;
@@ -251,7 +259,13 @@ function ControlViewModel() {
 
   // load quakes from USGS and create new model objects
   async function getQuakeFeed() {
-    return $.getJSON(self.generateFeedUrl());
+    try {
+      let feed = await $.getJSON(self.generateFeedUrl());
+      return feed;
+    }catch(error) {
+      console.log('geoJSON retrieval failed');
+      console.log(error);
+    }
   }
 
   self.populateQuakeModel = async function() {
@@ -274,6 +288,19 @@ function ControlViewModel() {
   // update the feed when either select menu changes
   self.curFeedType.subscribe(self.updateQuakeFeed, null);
   self.curFeedTimeHorizon.subscribe(self.updateQuakeFeed, null);
+
+  function checkMapError() {
+    setTimeout(() => {
+      try {
+        self.map.getBounds();
+      }catch(e) {
+        console.log('maps failed to load');
+        console.log(e);
+      }
+    }, 5000);
+  };
+
+checkMapError()
 }
 
 var controlViewModel = new ControlViewModel();
