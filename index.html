@@ -2,49 +2,38 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Earthquake Viewer</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <table>
-    <tr>
-      <td>
-        <div id="control_container">
-          <table>
-            <thead>
-              <tr>
-                <td>
-                  <select data-bind="options: feedTypes,
-                  value: curFeedType,
-                  optionsCaption: 'Choose earthquake magnitude limit...'"></select>
-                </td>
-                <td>
-                  <select data-bind="options: feedTimeHorizons,
-                  value: curFeedTimeHorizon,
-                  optionsCaption: 'Choose earthquake time window...'"
-                </td>
-                <td>
-                  <div id="detail_button">
-                    <button data-bind="click: $root.showQuakeDetail">Show Detail</button>
-                  </div>
-                </td>
-              </tr>
-            </thead>
-            <tbody data-bind="foreach: visibleQuakes">
-              <tr>
-                <td data-bind="click: $root.setCurrentQuake,
-                text: name">
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </td>
-      <td>
-        <div id="map_container"></div>
-      </td>
-    </tr>
-  </table>
+  <div class="container">
+
+    <div class="control-container">
+      <div class="control-item">
+        <select data-bind="options: feedTypes,
+        value: curFeedType,
+        optionsCaption: 'Magnitude'">
+        </select>
+      </div>
+      <div class="control-item">
+        <select id="time-select" data-bind="options: feedTimeHorizons,
+        value: curFeedTimeHorizon,
+        optionsCaption: 'Time'">
+        </select>
+      </div>
+      <div id="detail-button" class="control-item">
+        <button data-bind="click: $root.showQuakeDetail">Show Detail</button>
+      </div>
+    </div>
+    <div id="quake-list-container" data-bind="foreach: visibleQuakes">
+      <span class="quake-item" data-bind="click: $root.setCurrentQuake,
+      text: name">
+      </span>
+    </div>
+      <div id="map_container"></div>
+  </div>
+</body>
   <script src="js/libs/jquery.min.js"></script>
   <script src="js/libs/knockout-3.4.2.js"></script>
   <script src="js/app.js"></script>
