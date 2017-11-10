@@ -143,6 +143,20 @@ class MarkerManager {
     this.quakeMarker = null;
     this.placeMarker = null;
     this.map = googleMapInstance;
+    this.markers = [];
+  }
+
+  displayQuakeMarkers(loadedQuakeJSON) {
+    if (this.markers) {
+      this.markers.forEach(marker => {
+        marker.removeMarker();
+      });
+      this.markers = [];
+    }
+    loadedQuakeJSON.forEach(quake => {
+      var newMarker = new QuakeMarker(quake, this.map);
+      this.markers.push(newMarker);
+    });
   }
 
   setQuakeMarker(earthQuake) {
@@ -281,6 +295,7 @@ function ControlViewModel() {
     if (self.map) {
       let newQuakes = await self.populateQuakeModel();
       self.loadedQuakes = newQuakes;
+      self.markerManager.displayQuakeMarkers(newQuakes);
       self.updateVisibleQuakes(self.map.getBounds());
     }
   }
