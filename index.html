@@ -9,27 +9,29 @@
 <body>
   <div class="container">
 
-    <div class="control-container">
-      <div class="control-item">
-        <select data-bind="options: feedTypes,
-        value: curFeedType,
-        optionsCaption: 'Magnitude'">
-        </select>
+    <div id="ui-container">
+      <div class="control-container">
+        <div class="control-item">
+          <select data-bind="options: feedTypes,
+          value: curFeedType,
+          optionsCaption: 'Magnitude'">
+          </select>
+        </div>
+        <div class="control-item">
+          <select id="time-select" data-bind="options: feedTimeHorizons,
+          value: curFeedTimeHorizon,
+          optionsCaption: 'Time'">
+          </select>
+        </div>
+        <div id="detail-button" class="control-item">
+          <button data-bind="click: $root.showQuakeDetail">Show Detail</button>
+        </div>
       </div>
-      <div class="control-item">
-        <select id="time-select" data-bind="options: feedTimeHorizons,
-        value: curFeedTimeHorizon,
-        optionsCaption: 'Time'">
-        </select>
+      <div id="quake-list-container" data-bind="foreach: visibleQuakes">
+        <span class="quake-item" data-bind="click: $root.setCurrentQuake,
+        text: name">
+        </span>
       </div>
-      <div id="detail-button" class="control-item">
-        <button data-bind="click: $root.showQuakeDetail">Show Detail</button>
-      </div>
-    </div>
-    <div id="quake-list-container" data-bind="foreach: visibleQuakes">
-      <span class="quake-item" data-bind="click: $root.setCurrentQuake,
-      text: name">
-      </span>
     </div>
       <div id="map_container"></div>
   </div>
