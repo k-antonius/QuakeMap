@@ -285,8 +285,10 @@ function ControlViewModel() {
   });
 
   self.showQuakeDetail = async function () {
-    self.markerManager.quakeMarker.panAndZoom();
-    self.markerManager.geocodeTitlePlace(self.currentQuake());
+    if (self.currentQuake()) {
+      self.markerManager.quakeMarker.panAndZoom();
+      self.markerManager.geocodeTitlePlace(self.currentQuake());
+    }
   }
 
   function setVisibleQuakes (bounds, quakesToFilter) {
