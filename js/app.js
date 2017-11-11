@@ -177,19 +177,25 @@ class MarkerManager {
 
   setQuakeMarker(earthQuake) {
     this.removePlaceMarker();
-    // this.removeQuakeMarker();
-    // this.quakeMarker = new QuakeMarker(earthQuake, this.map);
-    this.markers.forEach(quake => {
-      if (quake.entity !== earthQuake) {
-        quake.marker.setOpacity(0.3);
-        quake.closeInfoWindow();
-      }
-      else {
+    if (! earthQuake) {
+      this.markers.forEach(quake => {
         quake.marker.setOpacity(1.0);
-        this.quakeMarker = quake;
-        this.quakeMarker.bounceMarker();
-      }
-    })
+        quake.closeInfoWindow();
+      })
+    }
+    else {
+      this.markers.forEach(quake => {
+        if (quake.entity !== earthQuake) {
+          quake.marker.setOpacity(0.3);
+          quake.closeInfoWindow();
+        }
+        else {
+          quake.marker.setOpacity(1.0);
+          this.quakeMarker = quake;
+          this.quakeMarker.bounceMarker();
+        }
+      });
+    }
   }
 
   setPlaceMarker(placeInfo) {
@@ -270,6 +276,7 @@ function ControlViewModel() {
   // self.quakeTitlePlace = ko.observable(false);
 
   self.setCurrentQuake = function(earthQuake) {
+    earthQuake === self.currentQuake() ? self.currentQuake(false) :
     self.currentQuake(earthQuake);
   }
 

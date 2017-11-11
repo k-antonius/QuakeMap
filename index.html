@@ -29,7 +29,8 @@
       </div>
       <div id="quake-list-container" data-bind="foreach: visibleQuakes">
         <span class="quake-item" data-bind="click: $root.setCurrentQuake,
-        text: name">
+        text: name,
+        css: {'current-selection':  $data===$root.currentQuake()}">
         </span>
       </div>
     </div>

@@ -145,3 +145,7 @@ html, body {
     background-color: gray;
   }
 }
+
+.current-selection, quake-list-container {
+  background-color: #d0a0a0;
+}
