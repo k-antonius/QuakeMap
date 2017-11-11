@@ -36,7 +36,7 @@ class AbstractMarker {
     this.map = map;
     this.infoWindow = new google.maps.InfoWindow();
     this.marker.addListener('click', () => {
-      this.openInfoWindow();
+      this.bounceMarker();
     });
   }
 
