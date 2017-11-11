@@ -242,12 +242,17 @@ class MarkerManager {
     let geocoder = new google.maps.Geocoder();
     let geoParams = {address: titlePlace, bounds: this.map.getBounds()};
       geocoder.geocode(geoParams, (result, status) => {
-        let location = result[0].geometry.location;
-        let quakeTitlePlace = new QuakeTitlePlaceModel(titlePlace, location);
-        console.log(result);
-        console.log(status);
-        this.setPlaceMarker(quakeTitlePlace);
-        this.fitToPlaceMarker();
+        if (status == 'OK') {
+          let location = result[0].geometry.location;
+          let quakeTitlePlace = new QuakeTitlePlaceModel(titlePlace, location);
+          console.log(result);
+          console.log(status);
+          this.setPlaceMarker(quakeTitlePlace);
+          this.fitToPlaceMarker();
+        }
+        else {
+          alert('Unable to find nearby location. Error was ' + status);
+        }
       });
   }
 
