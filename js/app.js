@@ -6,6 +6,7 @@ const MAPS_URL = 'https://maps.googleapis.com/' +
 $.getScript(MAPS_URL, initMap)
   .fail((e)=> {
   console.log(e + ' failed to load maps API');
+  alert('Failed to load map.');
   });
 
 class EarthQuakeModel {
@@ -405,6 +406,7 @@ function initMap() {
   }, error => {
     // handle the error
     console.error("Failed to load map.", error);
+    alert('Failed to load map.');
   });
 
 
