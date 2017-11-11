@@ -367,19 +367,33 @@ var controlViewModel = new ControlViewModel();
 
 // create a new Google Map
 function initMap() {
-  let map = new google.maps.Map(document.getElementById('map_container'), {
-    center: {lat: 36, lng: -96},
-    zoom: 4
+  function createMap() {
+    return new Promise(function(resolve, reject){
+      let map = new google.maps.Map(document.getElementById('map_container'), {
+        center: {lat: 36, lng: -96},
+        zoom: 4
+      });
+      resolve(map);
+      reject(Error("failed to load map"));
+    });
+  }
+
+  createMap().then(map => {
+    // do stuff with the map
+    controlViewModel.map = map;
+    controlViewModel.markerManager = new MarkerManager(map);
+    controlViewModel.updateQuakeFeed();
+    // listener to let UI know that map bounds have changed
+    map.addListener('idle', function() {
+      let bounds = map.getBounds();
+      controlViewModel.updateVisibleQuakes(bounds, null);
+    });
+  }, error => {
+    // handle the error
+    console.error("Failed to load map.", error);
   });
 
-  controlViewModel.map = map;
-  controlViewModel.markerManager = new MarkerManager(map);
-  controlViewModel.updateQuakeFeed();
-  // listener to let UI know that map bounds have changed
-  map.addListener('idle', function() {
-    let bounds = map.getBounds();
-    controlViewModel.updateVisibleQuakes(bounds, null);
-  });
+
 }
 
 ko.applyBindings(controlViewModel);
