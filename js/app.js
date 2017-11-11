@@ -369,6 +369,7 @@ function ControlViewModel() {
       }catch(e) {
         console.log('maps failed to load');
         console.log(e);
+        alert('Failed to load map.');
       }
     }, 5000);
   };
