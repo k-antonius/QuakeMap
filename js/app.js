@@ -129,27 +129,35 @@ class PlaceMarker extends AbstractMarker {
 
   // get wikipedia articles and populate template with results
   async parseResults(title) {
-    let results = await this.getWikipediaArticles(title);
-    console.log(results);
-    let li_array = [];
-    for (let i=0; i < results[1].length; i++) {
-      let templatedListItem = this.buildInfoNode(results[1][i],
-                                                 results[2][i],
-                                                 results[3][i]
-                                                );
-      li_array.push(templatedListItem);
+    try {
+      let results = await this.getWikipediaArticles(title);
+      // if results[1] is len 0, return a string
+      if (results[1].length === 0) {
+        return '<br><div><em>No results found.</em></div>';
+      }
+      else {
+        let li_array = [];
+        for (let i=0; i < results[1].length; i++) {
+          let templatedListItem = this.buildInfoNode(results[1][i],
+                                                     results[2][i],
+                                                     results[3][i]
+                                                    );
+          li_array.push(templatedListItem);
+        }
+        return this.assembleTemplate(li_array);
+      }
+    }catch(error){
+      console.error(error);
+      return '<br><div><em>Error querying Wikipedia.</em></div>';
     }
-    return this.assembleTemplate(li_array);
   }
 
   // makes an ajax call to retrieve wikipedia articles based on this place's
   // name. Populates a html template with those articles. Sets the content of
   // this infowindow.
   async populateInfoWindow(placeName) {
-    console.log('this place\'s name is ' + placeName);
     let populatedTemplate = await this.parseResults(placeName);
     let title = `<div id="quakePlaceTitle">${placeName}:</div>`;
-    console.log(title.concat(populatedTemplate));
     this.infoWindow.setContent(title.concat(populatedTemplate));
   }
 }
