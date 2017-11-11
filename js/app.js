@@ -267,7 +267,7 @@ function ControlViewModel() {
   self.feedTypes = ["significant", "4.5", "2.5", "1.0", "all"];
   self.feedTimeHorizons = ["hour", "day", "week", "month"];
   // use significant and week as default feed when app loads
-  self.curFeedType = ko.observable("significant");
+  self.curFeedType = ko.observable("4.5");
   self.curFeedTimeHorizon = ko.observable("week");
 
   self.currentQuake = ko.observable(false);
