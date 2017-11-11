@@ -36,7 +36,7 @@ class AbstractMarker {
     this.map = map;
     this.infoWindow = new google.maps.InfoWindow();
     this.marker.addListener('click', () => {
-      this.infoWindow.open(this.map, this.marker);
+      this.openInfoWindow();
     });
   }
 
@@ -48,6 +48,22 @@ class AbstractMarker {
   panAndZoom() {
     this.map.setCenter(this.marker.position);
     this.map.setZoom(11);
+  }
+
+  bounceMarker() {
+    this.marker.setAnimation(google.maps.Animation.BOUNCE);
+    setTimeout(()=>{
+      this.marker.setAnimation(null);
+      this.openInfoWindow();
+    }, 1400);
+  }
+
+  openInfoWindow() {
+    this.infoWindow.open(this.map, this.marker);
+  }
+
+  closeInfoWindow() {
+    this.infoWindow.close();
   }
 }
 
@@ -161,8 +177,19 @@ class MarkerManager {
 
   setQuakeMarker(earthQuake) {
     this.removePlaceMarker();
-    this.removeQuakeMarker();
-    this.quakeMarker = new QuakeMarker(earthQuake, this.map);
+    // this.removeQuakeMarker();
+    // this.quakeMarker = new QuakeMarker(earthQuake, this.map);
+    this.markers.forEach(quake => {
+      if (quake.entity !== earthQuake) {
+        quake.marker.setOpacity(0.3);
+        quake.closeInfoWindow();
+      }
+      else {
+        quake.marker.setOpacity(1.0);
+        this.quakeMarker = quake;
+        this.quakeMarker.bounceMarker();
+      }
+    })
   }
 
   setPlaceMarker(placeInfo) {
