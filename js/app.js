@@ -329,10 +329,19 @@ function ControlViewModel() {
 
   self.updateQuakeFeed = async function() {
     if (self.map) {
-      let newQuakes = await self.populateQuakeModel();
-      self.loadedQuakes = newQuakes;
-      self.markerManager.displayQuakeMarkers(newQuakes);
-      self.updateVisibleQuakes(self.map.getBounds());
+      try {
+        let newQuakes = await self.populateQuakeModel();
+        self.loadedQuakes = newQuakes;
+        self.markerManager.displayQuakeMarkers(newQuakes);
+        let bounds = await self.map.getBounds();
+        if (bounds !== undefined) {
+          self.updateVisibleQuakes(bounds);
+        }
+      }catch(error) {
+        alert('Failed to load quakes feed.');
+        console.error(error);
+      }
+
     }
   }
 
