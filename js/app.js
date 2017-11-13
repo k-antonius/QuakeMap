@@ -524,7 +524,7 @@ function ControlViewModel() {
       alert('Please select an earthquake from the list below to see detail.');
     }
   }
-  
+
   /**
    * self.updateVisibleQuakes - Updates the contents of the visible quakes
    * observable to be the quakes that are within the bounds of the google map
@@ -547,7 +547,8 @@ function ControlViewModel() {
    * @return {string}  the url to use to make an AJAX request to USGS.gov
    */
   self.generateFeedUrl = function() {
-   let baseFeedUrl = `https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/${self.curFeedType()}_${self.curFeedTimeHorizon()}.geojson`; // TODO fix line continuation
+   let baseFeedUrl = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/' +
+   `summary/${self.curFeedType()}_${self.curFeedTimeHorizon()}.geojson`;
    return baseFeedUrl;
   }
 
