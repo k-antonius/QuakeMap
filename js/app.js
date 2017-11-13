@@ -163,6 +163,7 @@ class QuakeMarker extends AbstractMarker {
       `<div>Magnitude: ${this.entity.magnitude}</div>` +
       `<div>Depth: ${this.entity.depth}</div>` +
       `<div>When: ${this.formatDate()}</div>` +
+      '<em>(via USGS.gov)</em>' +
       '</div>';
     this.infoWindow.setContent(contentString);
   }
@@ -250,7 +251,7 @@ class PlaceMarker extends AbstractMarker {
    */
   assembleTemplate(templatedListItems) {
     let openTags = '<div id="quakePlaceArticles"> <ol>';
-    let closeTags = '</ol> </div>';
+    let closeTags = '</ol> <em>via Wikipedia.org</em> </div>';
     return openTags.concat(templatedListItems).concat(closeTags);
   }
 
@@ -343,7 +344,6 @@ class MarkerManager {
       this.markers.push(newMarker);
     });
   }
-
 
   /**
    * setQuakeMarker - Sets the active marker on the map. The active marker is
