@@ -43,7 +43,7 @@ Clicking on any marker will display additional information about it.
 
 Credits
 -------
-Earthquake information provided by[USGS.gov.](https://earthquake.usgs.gov/earthquakes/).
+Earthquake information provided by [USGS.gov.](https://earthquake.usgs.gov/earthquakes/).
 
 Place information provided by [Wikipedia](www.wikipedia.org).
 
