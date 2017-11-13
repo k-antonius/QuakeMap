@@ -524,24 +524,19 @@ function ControlViewModel() {
       alert('Please select an earthquake from the list below to see detail.');
     }
   }
-
+  
   /**
-   * setVisibleQuakes - Updates the contents of the visible quakes observable
-   * to be the quakes that are within the bounds of the google map viewport.
+   * self.updateVisibleQuakes - Updates the contents of the visible quakes
+   * observable to be the quakes that are within the bounds of the google map
+   * viewport.
    *
    * @param  {LatLngBounds} bounds Current map bounds
-   * @param  {array} quakesToFilter currently loaded EarthQuakeModels
    * @return None.
    */
-  function setVisibleQuakes (bounds, quakesToFilter) {
-    self.visibleQuakes(quakesToFilter.filter(quake => {
+  self.updateVisibleQuakes = function(bounds) {
+    self.visibleQuakes(self.loadedQuakes.filter(quake => {
       return bounds.contains(quake.latLon);
     }));
-  }
-
-  // TODO Unnecessary function wrapping here -- combine with setVisibleQuakes
-  self.updateVisibleQuakes = function(bounds) {
-    setVisibleQuakes(bounds, self.loadedQuakes);
   }
 
   /**
