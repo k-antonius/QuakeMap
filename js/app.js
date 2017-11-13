@@ -490,9 +490,6 @@ function ControlViewModel() {
   self.currentQuake = ko.observable(false); // the quake currently selected
   self.markerManager = null; // MarkerManager instance
 
-  // TODO remove this?
-  // self.quakeTitlePlace = ko.observable(false);
-
   /**
    * self.setCurrentQuake - Sets the active EarthQuakeModel in the UI. If the
    * quake to be set is already the current quake, the current status is
