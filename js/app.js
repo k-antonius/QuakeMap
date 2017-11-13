@@ -394,14 +394,6 @@ class MarkerManager {
     this.placeMarker = new PlaceMarker(placeInfo, this.map);
   }
 
-  // TODO Can be deleted?
-  removeQuakeMarker() {
-    if (this.quakeMarker) {
-      this.quakeMarker.removeMarker();
-      this.placeMarker = null;
-    }
-  }
-
   /**
    * removePlaceMarker - Remove the currently set placeMarker, if one is set.
    * Removes the marker from the map and removes its reference.
