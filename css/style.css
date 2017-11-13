@@ -109,6 +109,7 @@ html, body {
     flex-direction: column;
     flex: 10;
     background: gray;
+    overflow-y: auto;
   }
 
   .quake-item {
