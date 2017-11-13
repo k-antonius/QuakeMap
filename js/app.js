@@ -531,6 +531,9 @@ function ControlViewModel() {
       self.markerManager.quakeMarker.panAndZoom();
       self.markerManager.geocodeTitlePlace(self.currentQuake());
     }
+    else {
+      alert('Please select an earthquake from the list below to see detail.');
+    }
   }
 
   /**
