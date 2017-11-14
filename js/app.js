@@ -1,20 +1,5 @@
 'use strict';
 
-// Google Maps API URL
-const MAPS_URL = 'https://maps.googleapis.com/' +
-                 'maps/api/js?key=AIzaSyB1rdDMZkmaoj_OINNgctPths_KJn1lTPg';
-
-
-/**
- * Loads Google maps script.
- */
-$.getScript(MAPS_URL, initMap)
-  .fail((e)=> {
-  console.log(e + ' failed to load maps API');
-  alert('Failed to load map.');
-  });
-
-
 /**
  * Class to store information about earthquakes from USGS.gov
  */
@@ -627,32 +612,12 @@ function ControlViewModel() {
   // load new eathquake data when either feed observable updates
   self.curFeedType.subscribe(self.updateQuakeFeed, null);
   self.curFeedTimeHorizon.subscribe(self.updateQuakeFeed, null);
-
-
-  /**
-   * checkMapError - If the google map API script fails to load after a
-   * significant amout of time, display an alert message.
-   *
-   * @return None.
-   */
-  function checkMapError() {
-    setTimeout(() => {
-      try {
-        self.map.getBounds();
-      }catch(e) {
-        console.log('maps failed to load');
-        console.log(e);
-        alert('Failed to load map.');
-      }
-    }, 5000);
-  };
-
-checkMapError()
 }
+
 
 var controlViewModel = new ControlViewModel();
 
-// create a new Google Map
+
 /**
  * initMap - Callback function for google map script loading. Create a new map
  * instance, pass this instance to the ViewModel, load earthquake data for
@@ -675,7 +640,6 @@ function initMap() {
   }
 
   createMap().then(map => {
-    // do stuff with the map
     controlViewModel.map = map;
     controlViewModel.markerManager = new MarkerManager(map);
     controlViewModel.updateQuakeFeed();
@@ -689,6 +653,11 @@ function initMap() {
     console.error("Failed to load map.", error);
     alert('Failed to load map.');
   });
+}
+
+// Handle Maps API failure.
+function mapError() {
+  alert("Failed to load Google Map.");
 }
 
 ko.applyBindings(controlViewModel);
