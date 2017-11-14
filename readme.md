@@ -33,6 +33,11 @@ highlight it and display more information about the earthquake.
 The user may then click the "Show Detail" button as described above.
 Clicking on the same title again will unselect it.
 
+The filter search box allows the user to filter the displayed quakes by
+searching for a quake by name. This feature is most useful when many quakes
+are displayed, i.e. if the magnitude is set to 2.5 and lower or the map is
+very zoomed out.
+
 3. Google Map Viewer.
 
 Finally, all currently loaded earthquakes are displayed with markers in the
