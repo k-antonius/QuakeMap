@@ -27,7 +27,10 @@
           <button data-bind="click: $root.showQuakeDetail">Show Detail</button>
         </div>
       </div>
-      <div id="quake-list-container" data-bind="foreach: visibleQuakes">
+      <div id="filter-container">
+        <input id="filter-box" placeholder="Filter by name..." type="search" data-bind="textInput: filterText"/>
+      </div>
+      <div id="quake-list-container" data-bind="foreach: displayedQuakes">
         <span class="quake-item" data-bind="click: $root.setCurrentQuake,
         text: name,
         css: {'current-selection':  $data===$root.currentQuake()}">

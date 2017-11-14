@@ -480,6 +480,21 @@ function ControlViewModel() {
   self.map = null; // google map instance
   self.loadedQuakes = []; // quakes loaded from USGS, EarthQuakeModel objects
   self.visibleQuakes = ko.observableArray(); // quakes in map viewport
+  self.filterText = ko.observable(''); // search string from input element
+
+  // quakes actually displayed, possibly filtered by name
+  self.displayedQuakes = ko.pureComputed(() => {
+    if (self.filterText() === '') {
+      return self.visibleQuakes();
+    }
+    else {
+      return self.visibleQuakes().filter((quake) => {
+        const lowercaseName = quake.name.toLowerCase();
+        return lowercaseName.includes(self.filterText().toLowerCase());
+      });
+    }
+  });
+
   // types of available earthquake feeds from USGS.gov
   self.feedTypes = ["significant", "4.5", "2.5", "1.0", "all"]; // magnitude
   self.feedTimeHorizons = ["hour", "day", "week", "month"]; // time

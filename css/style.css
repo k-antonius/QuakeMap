@@ -23,17 +23,29 @@ html, body {
     background-color: gray;
   }
 
-  select, button {
+  select, button, input {
     width: 100%;
     height: 50px;
     text-align: center;
     font-size: .8rem;
+    border: none;
+  }
+
+  #filter-container {
+    height: 50px;
+    display: flex;
+    align-items: center;
+  }
+
+  #filter-box {
+    height: 50px;
   }
 
   #ui-container {
     display: flex;
     flex-direction: column;
     width: 100%;
+    flex: 1 0 auto;
   }
 
   .container {
@@ -62,26 +74,26 @@ html, body {
   }
 
   #quake-list-container {
-    height: 90px;
+    height: 70px;
     background: gray;
     width: 100%;
     overflow-x: auto;
     overflow-y: hidden;
     display: flex;
     align-items: center;
-    font-size: .8rem;
+    font-size: .75rem;
   }
 
   .quake-item {
     flex: 100px;
     min-width: 100px;
-    margin-top: 5px;
-    margin-bottom: 5px;
+    margin-top: 3px;
+    margin-bottom: 3px;
     margin-left: 1px;
     font-family: arial;
     background-color: #d6d1d1;
     padding: .2rem;
-    height: 70%;
+    height: 80%;
     text-align: center;
   }
 
@@ -137,6 +149,16 @@ html, body {
     display: flex;
     flex-direction: column;
     flex: 1;
+  }
+
+  #filter-container {
+    display: flex;
+    height: 40px;
+  }
+
+  #filter-box {
+    width: 100%;
+    border: none;
   }
 
   #map_container {
